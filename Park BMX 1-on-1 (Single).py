@@ -11,7 +11,8 @@ player = {
     "Name" : None,
     "HP" : 50,
     "Offense" : 7,
-    "Defense" : 5
+    "Defense" : 5,
+    "Special" : 15
 }
 
 # Bad Guy's Stats
@@ -182,15 +183,15 @@ def game():
                     bad_guy_defend = False
 
         # Bad Guy's Action (AI) - Loop Breaker 1: 3-in-a-row
-        if int(len(loop_breaker_1)) == 1:
+        if len(loop_breaker_1) == 1:
             counter_attack_1 = False
-        elif int(len(loop_breaker_1)) == 2:
+        elif len(loop_breaker_1) == 2:
             if loop_breaker_1[0] == loop_breaker_1[1]:
                 counter_attack_1 = False
             elif loop_breaker_1[0] != loop_breaker_1[1]:
                 counter_attack_1 = False
                 loop_breaker_1.clear()
-        elif int(len(loop_breaker_1)) == 3:
+        elif len(loop_breaker_1) == 3:
             if loop_breaker_1[1] == loop_breaker_1[2]:
                 counter_attack_1 = True
                 loop_breaker_1.clear()
@@ -201,22 +202,24 @@ def game():
                 loop_breaker_1.clear()
                 bad_guy_attack = True
                 bad_guy_defend = False
-        """
+
         # Bad Guy's Action (AI) - Loop Breaker 2: Zigzag
-        elif int(len(loop_breaker_2)) == 1:
+        elif len(loop_breaker_2) == 1:
             counter_attack_2 = False
-        elif int(len(loop_breaker_2)) == 2:
+        elif len(loop_breaker_2) == 2:
             if loop_breaker_2[0] != loop_breaker_2[1]:
                 counter_attack_2 = False
             elif loop_breaker_2[0] == loop_breaker_2[1]:
                 counter_attack_2 = False
                 loop_breaker_2.clear()
-        elif (int(len(loop_breaker_2)) > 2) and (int(len(loop_breaker_2)) < 10):
-            if loop_breaker_2[int(len(loop_breaker_2)) - 1] != loop_breaker_2[int(len(loop_breaker_2)) - 2]:
+        elif len(loop_breaker_2) > 2 and len(loop_breaker_2) < 10:
+            if loop_breaker_2[len(loop_breaker_2) - 1] != loop_breaker_2[len(loop_breaker_2) - 2]:
                 counter_attack_2 = False
-            if loop_breaker_2[int(len(loop_breaker_2)) - 1] == loop_breaker_2[int(len(loop_breaker_2)) - 2]:
+            if loop_breaker_2[len(loop_breaker_2) - 1] == loop_breaker_2[len(loop_breaker_2) - 2]:
                 counter_attack_2 = True
-        """
+        elif len(loop_breaker_2) == 10:
+            counter_attack_2 = True
+
         # Clash
 
         # Counter Attack Off
@@ -248,9 +251,9 @@ def game():
                 logging.debug("Player defends; Bad Guy defends.")
                 pass
 
-        # Counter Attack On
+        # Counter Attack 1 On
         elif counter_attack_1 == True:
-            logging.debug("Counter attack is on.")
+            logging.debug("Counter attack 1 is on.")
 
             # Player Attack; Bad Guy Counter Attack
             if (player_attack == True) and (player_defend == False):
@@ -263,79 +266,111 @@ def game():
                 player_health -= ((2 * bad_guy_offense) - player_defense)
                 logging.debug("Player defends; Bad Guy counter attacks.")
 
-        # Preparing for the next Turn
-        if turn < 5:
-            turn += 1
-            
-            logging.debug("preparations for turn 1-4 have been made.")
-        elif turn == 5:
-            turn = 1
-            round += 1
-            print("Time Out!")
+        # Counter Attack 2 On
+        elif counter_attack_2 == True:
+            logging.debug("Counter attack 2 is on.")
 
-            # HP Recovery
-            player_health += 5
-            bad_guy_health += 5
-            print("HP Recovered.")
+            # Player Attack; Bad Guy Counter Attack
+            if (player_attack == True) and (player_defend == False):
+                if len(loop_breaker_2) < 10:
+                    player_health -= (bad_guy_offense + len(loop_breaker_2))
+                    bad_guy_health -= player_offense
+                else:
+                    player_health -= (bad_guy_offense + 13)
+                    bad_guy_health -= player_offense
+                logging.debug("Player attacks; Bad Guy counter attacks.")
+
+            # Player Defend; Bad Guy Counter Attack
+            elif (player_attack == False) and (player_defend == True):
+                if len(loop_breaker_2) < 10:
+                    player_health -= ((bad_guy_offense + len(loop_breaker_2)) - player_defense)
+                else:
+                    player_health -= ((bad_guy_offense + 13) - player_defense)
+                logging.debug("Player attacks; Bad Guy counter attacks.")
+
+        if (player_health > 0) and (bad_guy_health > 0):
+            # Preparing for the next Turn
+            if turn < 5:
+                turn += 1
+
+                logging.debug("Preparations for turn 1-4 have been made.")
+            elif turn == 5:
+                turn = 1
+                round += 1
+                print("Time Out!")
+
+                # HP Recovery
+                player_health += 5
+                bad_guy_health += 5
+                print("HP Recovered.")
+                    
+                # Resetting player_action_record_mode_round for the next Round
+                player_action_record_mode_round.clear()
+
+                # Updating player_action_record_mode_recent
+                if len(player_action_record_mode_recent) == 5:
+                    player_action_record_mode_recent.pop(0)
                 
-            # Resetting player_action_record_mode_round for the next Round
-            player_action_record_mode_round.clear()
+                logging.debug("Preparations for turn 5 have been made.")
+        else:
+                    
+                # Resetting player_action_record_mode_round for the next Round
+                player_action_record_mode_round.clear()
 
-            # Updating player_action_record_mode_recent
-            if int(len(player_action_record_mode_recent)) == 5:
-                player_action_record_mode_recent.pop(0)
-            
-            logging.debug("preparations for turn 5 have been made.")
+                # Updating player_action_record_mode_recent
+                if len(player_action_record_mode_recent) == 5:
+                    player_action_record_mode_recent.pop(0)
 
-    else:
-        # Replay
-        def replay():
-            replay_answer = input("Do you w=h to replay?")
-            logging.debug("Input is taken.")
-            if replay_answer[0] == ("y" or "Y"):
-                global player_health
-                player_health = int(player["HP"])
-                global bad_guy_health
-                bad_guy_health = int(bad_guy["HP"])
-                logging.debug("HPs are reset.")
-                logging.debug("Game restarts.")
-                game()
-            elif replay_answer[0] == ("n" or "N"):
-                logging.debug("Game exits.")
-                input()
-                exit()
-            else:
-                print("Command not recognised!")
-                logging.debug("Error message is shown.")
-                replay()
+                logging.debug('Preprations made.')            
 
-        # Outro
-        def outro():
-            if (player_health == 0) and (bad_guy_health != 0):
-                print("GAME OVER")
-                print(f"Round {round}")
-                print(f"Turn {turn}")
-                print(f"{player_name}'s HP = 0")
-                print(f"Bad Guy's HP = {bad_guy_health}")
-                logging.debug("Results are shown.")
-                replay()
-            elif (player_health != 0) and (bad_guy_health == 0):
-                print("YOU WIN")
-                print(f"Round {round}")
-                print(f"Turn {turn}")
-                print(f"{player_name}'s HP = {player_health}")
-                print(f"Bad Guy's HP = 0")
-                logging.debug("Results are shown.")
-                replay()
-            elif (player_health and bad_guy_health) <= 0:
-                print("DRAW")
-                print(f"Round {round}")
-                print(f"Turn {turn}")
-                print(f"{player_name}'s HP = 0")
-                print(f"Bad Guy's HP = 0")
-                logging.debug("Results are shown.")
-                replay()
-        outro()
+    # Replay
+    def replay():
+        replay_answer = input("Do you wish to replay?")
+        logging.debug("Input is taken.")
+        if replay_answer[0] == ("y" or "Y"):
+            global player_health
+            player_health = int(player["HP"])
+            global bad_guy_health
+            bad_guy_health = int(bad_guy["HP"])
+            logging.debug("HPs are reset.")
+            logging.debug("Game restarts.")
+            game()
+        elif replay_answer[0] == ("n" or "N"):
+            logging.debug("Game exits.")
+            input()
+            exit()
+        else:
+            print("Command not recognised!")
+            logging.debug("Error message is shown.")
+            replay()
+
+    # Outro
+    def outro():
+        if (player_health == 0) and (bad_guy_health != 0):
+            print("GAME OVER")
+            print(f"Round {round}")
+            print(f"Turn {turn}")
+            print(f"{player_name}'s HP = 0")
+            print(f"Bad Guy's HP = {bad_guy_health}")
+            logging.debug("Results are shown.")
+            replay()
+        elif (player_health != 0) and (bad_guy_health == 0):
+            print("YOU WIN")
+            print(f"Round {round}")
+            print(f"Turn {turn}")
+            print(f"{player_name}'s HP = {player_health}")
+            print(f"Bad Guy's HP = 0")
+            logging.debug("Results are shown.")
+            replay()
+        elif (player_health and bad_guy_health) <= 0:
+            print("DRAW")
+            print(f"Round {round}")
+            print(f"Turn {turn}")
+            print(f"{player_name}'s HP = 0")
+            print(f"Bad Guy's HP = 0")
+            logging.debug("Results are shown.")
+            replay()
+    outro()
 
 if __name__ == "__main__":
     
@@ -345,6 +380,7 @@ if __name__ == "__main__":
 
     # Start Threads
     rpg_game.start()
+
     background_music.start()
 
     # Join Threads
