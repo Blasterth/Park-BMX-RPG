@@ -1,9 +1,8 @@
 from random import choice
 from statistics import mode
 import logging
-from playsound import playsound
-from time import sleep
 from threading import Thread
+import BMX
 logging.basicConfig(level=logging.DEBUG)
 
 # Player's Stats
@@ -23,17 +22,8 @@ bad_guy = {
     "Defense" : 5
 }
 
-def bgm():
-    while True:
-        def loop_playback():
-            playsound("1-01. Persona (Arrange Version).mp3", block=False)
-            sleep(207)
-        loop_playback()
-
-
-
 # Battle
-def game():
+def stage1():
 
     # Welcome
     print("Hello.")
@@ -334,7 +324,7 @@ def game():
             bad_guy_health = int(bad_guy["HP"])
             logging.debug("HPs are reset.")
             logging.debug("Game restarts.")
-            game()
+            stage1()
         elif replay_answer[0] == ("n" or "N"):
             logging.debug("Game exits.")
             input()
@@ -371,20 +361,6 @@ def game():
             logging.debug("Results are shown.")
             replay()
     outro()
-
-if __name__ == "__main__":
-    
-    # Threads
-    rpg_game = Thread(target=game, args=())
-    background_music = Thread(target=bgm, args=(), daemon=True)
-
-    # Start Threads
-    rpg_game.start()
-
-    background_music.start()
-
-    # Join Threads
-    rpg_game.join()
 
 logging.info("Game is fully functional!")
 input()
