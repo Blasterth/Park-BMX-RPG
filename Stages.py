@@ -122,7 +122,11 @@ def stage2():
         def player_action():
             action = input("Attack or Defend? Type A or D.")
             logging.debug("Input is taken.")
-            if action[0] == ("a" or "A"):
+            if len(action) == 0:
+                print("No input entered!") 
+                logging.debug("Error message is shown.")
+                player_action()
+            elif action[0].lower() == "a":
                 global player_attack
                 player_attack = True
                 global player_defend
@@ -132,7 +136,7 @@ def stage2():
                 player_action_record_mode_recent_2.append("Attack")
                 loop_breaker_1.append("Attack")
                 loop_breaker_2.append("Attack")
-            elif action[0] == ("d" or "D"):
+            elif action[0].lower() == "d":
                 player_defend = True
                 player_attack = False
                 player_action_record_mode_all_2.append("Defend")
@@ -209,7 +213,7 @@ def stage2():
                     bad_guy_1_defend = False
 
         # Bad Guy's Action (AI) - Loop Breaker 1: 3-in-a-row
-        if len(loop_breaker_1) == 1:
+        if len(loop_breaker_1) <= 1:
             counter_attack_1 = False
         elif len(loop_breaker_1) == 2:
             if loop_breaker_1[0] == loop_breaker_1[1]:
@@ -230,7 +234,7 @@ def stage2():
                 bad_guy_1_defend = False
 
         # Bad Guy's Action (AI) - Loop Breaker 2: Zigzag
-        elif len(loop_breaker_2) == 1:
+        if len(loop_breaker_2) <= 1:
             counter_attack_2 = False
         elif len(loop_breaker_2) == 2:
             if loop_breaker_2[0] != loop_breaker_2[1]:
@@ -247,12 +251,13 @@ def stage2():
         # Clash
 
         # Counter Attack Off
-        if (counter_attack_1 == False) and (counter_attack_2 == False):
+        if counter_attack_1 == False and counter_attack_2 == False:
             logging.debug(f"Counter attack is off.")
             logging.debug(f"player_attack = {player_attack}.")
             logging.debug(f"bad_guy_1_attack = {bad_guy_1_attack}")
             logging.debug(f"player_defend = {player_defend}")
             logging.debug(f"bad_guy_1_defend = {bad_guy_1_defend}")
+            logging.debug(f"{loop_breaker_2}")
 
             # Player Attack; Bad Guy Attack
             if ((player_attack == True) and (player_defend == False)) and ((bad_guy_1_attack == True) and (bad_guy_1_defend == False)):
@@ -277,18 +282,15 @@ def stage2():
 
         # Counter Attack 1 On
         elif counter_attack_1 == True:
-            logging.debug("Counter attack 1 is on.")
 
             # Player Attack; Bad Guy Counter Attack
             if (player_attack == True) and (player_defend == False):
                 player_health -= (2 * (bad_guy_1_offense))
                 bad_guy_1_health -= player_offense
-                logging.debug("Player attacks; Bad Guy counter attacks.")
 
             # Player Defend; Bad Guy Counter Attack
             elif (player_attack == False) and (player_defend == True):
                 player_health -= ((2 * bad_guy_1_offense) - player_defense)
-                logging.debug("Player defends; Bad Guy counter attacks.")
 
         # Counter Attack 2 On
         elif counter_attack_2 == True:
@@ -298,11 +300,13 @@ def stage2():
             if (player_attack == True) and (player_defend == False):
                     player_health -= (bad_guy_1_offense + len(loop_breaker_2))
                     bad_guy_1_health -= player_offense
+                    loop_breaker_2.clear()
                     logging.debug("Player attacks; Bad Guy counter attacks.")
 
             # Player Defend; Bad Guy Counter Attack
             elif (player_attack == False) and (player_defend == True):
                     player_health -= ((bad_guy_1_offense + len(loop_breaker_2)) - player_defense)
+                    loop_breaker_2.clear()
                     logging.debug("Player attacks; Bad Guy counter attacks.")
 
         if (player_health > 0) and (bad_guy_1_health > 0):
@@ -411,7 +415,6 @@ def stage1():
     player_action_record_mode_round_1 = []
     player_action_record_mode_recent_1 = []
     loop_breaker_1 = []
-    loop_breaker_2 = []
 
     # Time
     global round
@@ -442,7 +445,12 @@ def stage1():
         # Player's Action
         def player_action():
             action = input("Attack or Defend? Type A or D.")
-            if action[0] == ("a" or "A"):
+            logging.debug("Input is taken.")
+            if len(action) == 0:
+                print("No input entered!") 
+                logging.debug("Error message is shown.")
+                player_action()
+            elif action[0].lower() == "a":
                 global player_attack
                 player_attack = True
                 global player_defend
@@ -451,17 +459,16 @@ def stage1():
                 player_action_record_mode_round_1.append("Attack")
                 player_action_record_mode_recent_1.append("Attack")
                 loop_breaker_1.append("Attack")
-                loop_breaker_2.append("Attack")
-            elif action[0] == ("d" or "D"):
+            elif action[0].lower() == "d":
                 player_defend = True
                 player_attack = False
                 player_action_record_mode_all_1.append("Defend")
                 player_action_record_mode_round_1.append("Defend")
                 player_action_record_mode_recent_1.append("Defend")
                 loop_breaker_1.append("Defend")
-                loop_breaker_2.append("Defend")
             else:
                 print("Command not recognised!")
+                logging.debug("Error message is shown.")
                 player_action()
         player_action()
 
@@ -528,7 +535,7 @@ def stage1():
                     bad_guy_1_defend = False
 
         # Bad Guy's Action (AI) - Loop Breaker 1: 3-in-a-row
-        if len(loop_breaker_1) == 1:
+        if len(loop_breaker_1) <= 1:
             counter_attack_1 = False
         elif len(loop_breaker_1) == 2:
             if loop_breaker_1[0] == loop_breaker_1[1]:
@@ -661,3 +668,5 @@ def stage1():
             print(f"Bad Guy's HP = 0")
             replay_1_bad()
     outro()
+
+stage2()
