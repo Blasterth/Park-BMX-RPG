@@ -10,8 +10,8 @@ player = {
     "HP" : 50,
     "Offense" : 7,
     "Defense" : 5,
-    "SP" : 0,
-    "Special" : 15
+    "Special" : 15,
+    "SP" : 0
 }
 
 # Bad Guys' Stats
@@ -39,14 +39,6 @@ bad_guy_3 = {
     "Defense" : 5
 }
 
-global johnny
-johnny = {
-    "Name" : "Johnny",
-    "HP" : 100,
-    "Offense" : 8,
-    "Defense" : 4
-}
-
 global shadow_player
 shadow_player = {
     "Name" : None,
@@ -55,16 +47,28 @@ shadow_player = {
     "Defense" : 3
 }
 
+global johnny
+johnny = {
+    "Name" : "Johnny",
+    "HP" : 100,
+    "Offense" : 7,
+    "Defense" : 5
+}
+
 score = 0
 
 # Welcome
-print("Hello.")
+print("Hello. Welcome to Park BMX.")
 global player_name
 player_name = input("Please enter your name/nickname.")
-if player_name == "":
+if len(player_name) == 0:
     player_name = "Nameless"
 player.update({"Name" : player_name})
 shadow_player.update({"Name" : f"Shadow {player_name}"})
+
+# Stage 4
+def stage4():
+    pass
 
 # Stage 3
 def stage3():
@@ -348,7 +352,11 @@ def stage3():
     def replay_1_bad():
         replay_answer = input("Do you wish to replay?")
         logging.debug("Input is taken.")
-        if replay_answer[0] == ("y" or "Y"):
+        if len(replay_answer) == 0:
+            print("No input entered!") 
+            logging.debug("Error message is shown.")
+            player_action()
+        elif replay_answer[0].lower() == "y":
             global player_health
             player_health = int(player["HP"])
             global bad_guy_1_health
@@ -356,7 +364,7 @@ def stage3():
             logging.debug("HPs are reset.")
             logging.debug("Game restarts.")
             stage1()
-        elif replay_answer[0] == ("n" or "N"):
+        elif replay_answer[0].lower() == "n":
             logging.debug("Game exits.")
             input()
             exit()
@@ -395,6 +403,9 @@ def stage3():
 
 # Stage 2
 def stage2():
+
+    # Stage number
+    print("Stage 2")
 
     # Stats of Characters (to avoid changing the values in the dicts)
     global player_health
@@ -567,8 +578,10 @@ def stage2():
         elif len(loop_breaker_2) > 2:
             if loop_breaker_2[len(loop_breaker_2) - 1] != loop_breaker_2[len(loop_breaker_2) - 2]:
                 counter_attack_2 = False
-            if loop_breaker_2[len(loop_breaker_2) - 1] == loop_breaker_2[len(loop_breaker_2) - 2]:
+            elif loop_breaker_2[len(loop_breaker_2) - 1] == loop_breaker_2[len(loop_breaker_2) - 2]:
                 counter_attack_2 = True
+                bad_guy_1_attack = None
+                bad_guy_1_defend = None
 
         # Clash
 
@@ -649,21 +662,34 @@ def stage2():
                 if len(player_action_record_mode_recent_2) == 5:
                     player_action_record_mode_recent_2.pop(0)
 
-    # Replay
-    def replay_1_bad():
+    # Replay-2-Bad
+    def replay_2_bad():
         replay_answer = input("Do you wish to replay?")
-        if replay_answer[0] == ("y" or "Y"):
+        if len(replay_answer) == 0:
+            print("No input entered!")
+            player_action()
+        elif replay_answer[0].lower() == "y":
             global player_health
             player_health = int(player["HP"])
             global bad_guy_1_health
             bad_guy_1_health = int(bad_guy_1["HP"])
-            stage1()
-        elif replay_answer[0] == ("n" or "N"):
+            stage2()
+        elif replay_answer[0].lower() == "n":
             input()
             exit()
         else:
             print("Command not recognised!")
-            replay_1_bad()
+            replay_2_bad()
+
+
+    # Replay-2-Good
+    def replay_2_good():
+        stage_2_answer = input("Do you wish to proceed to Stage 3?")
+        if stage_2_answer[0].lower() == "y":
+            print("Stage 3 is being developed.")
+            replay_2_bad()
+        if stage_2_answer[0].lower() == "n":
+            replay_2_bad()
 
     # Outro
     def outro():
@@ -673,25 +699,28 @@ def stage2():
             print(f"Turn {turn}")
             print(f"{player_name}'s HP = 0")
             print(f"Bad Guy 1's HP = {bad_guy_1_health}")
-            replay_1_bad()
+            replay_2_bad()
         elif (player_health != 0) and (bad_guy_1_health == 0):
             print("YOU WIN")
             print(f"Round {round}")
             print(f"Turn {turn}")
             print(f"{player_name}'s HP = {player_health}")
             print(f"Bad Guy's HP = 0")
-            replay_1_bad()
+            replay_2_good()
         elif (player_health and bad_guy_1_health) <= 0:
             print("DRAW")
             print(f"Round {round}")
             print(f"Turn {turn}")
             print(f"{player_name}'s HP = 0")
             print(f"Bad Guy's HP = 0")
-            replay_1_bad()
+            replay_2_bad()
     outro()
 
 # Stage 1
 def stage1():
+
+    # Stage number
+    print("Stage 1")
 
     # Stats of Characters (to avoid changing the values in the dicts)
     global player_health
@@ -719,7 +748,7 @@ def stage1():
     global turn
     turn = 1
 
-    while (player_health > 0) and (bad_guy_1_health > 0):
+    while (player_health > 0 and bad_guy_1_health > 0) and turn <= 50:
 
         # Action Booleans
         global player_attack
@@ -840,12 +869,10 @@ def stage1():
         elif len(loop_breaker_1) == 3:
             if loop_breaker_1[1] == loop_breaker_1[2]:
                 counter_attack_1 = True
-                loop_breaker_1.clear()
                 bad_guy_1_attack = None
                 bad_guy_1_defend = None
             elif loop_breaker_1[1] != loop_breaker_1[2]:
                 counter_attack_1 = False
-                loop_breaker_1.clear()
                 bad_guy_1_attack = True
                 bad_guy_1_defend = False
 
@@ -878,17 +905,23 @@ def stage1():
             if (player_attack == True) and (player_defend == False):
                 player_health -= (2 * (bad_guy_1_offense))
                 bad_guy_1_health -= player_offense
+                loop_breaker_1.clear()
 
             # Player Defend; Bad Guy Counter Attack
             elif (player_attack == False) and (player_defend == True):
                 player_health -= ((2 * bad_guy_1_offense) - player_defense)
+                loop_breaker_1.clear()
 
         if (player_health > 0) and (bad_guy_1_health > 0):
+            
             # Preparing for the next Turn
             if turn < 5:
                 turn += 1
-
             elif turn == 5:
+
+                # Time up
+                if turn == 50:
+                    break
                 turn = 1
                 round += 1
                 print("Time Out!")
@@ -916,13 +949,13 @@ def stage1():
     # Replay-1-Bad
     def replay_1_bad():
         replay_answer = input("Do you wish to replay?")
-        if replay_answer[0] == ("y" or "Y"):
+        if replay_answer[0].lower() == "y":
             global player_health
             player_health = int(player["HP"])
             global bad_guy_1_health
             bad_guy_1_health = int(bad_guy_1["HP"])
             stage1()
-        elif replay_answer[0] == ("n" or "N"):
+        elif replay_answer[0].lower() == "n":
             input()
             exit()
         else:
@@ -932,9 +965,12 @@ def stage1():
     # Replay-1-Good
     def replay_1_good():
         stage_2_answer = input("Do you wish to proceed to Stage 2?")
-        if stage_2_answer[0] == ("y" or "Y"):
+        if stage_2_answer[0].lower() == "y":
             stage2()
-        if stage_2_answer[0] == ("n" or "N"):
+        if stage_2_answer[0].lower() == "n":
+            replay_1_bad()
+        else:
+            print("Command not recognised!")
             replay_1_bad()
 
     # Outro
@@ -960,4 +996,7 @@ def stage1():
             print(f"{player_name}'s HP = 0")
             print(f"Bad Guy's HP = 0")
             replay_1_bad()
+        elif turn == 50:
+            print("TIME UP")
+            replay_1_bad
     outro()

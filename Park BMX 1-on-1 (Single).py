@@ -9,7 +9,8 @@ player = {
     "HP" : 50,
     "Offense" : 7,
     "Defense" : 5,
-    "Special" : 15
+    "Special" : 15,
+    "SP" : 0
 }
 
 # Bad Guys' Stats
@@ -28,6 +29,7 @@ bad_guy_2 = {
     "Offense" : 7,
     "Defense" : 5
 }
+
 global bad_guy_3
 bad_guy_3 = {
     "Name" : "Bad Guy 3",
@@ -35,19 +37,21 @@ bad_guy_3 = {
     "Offense" : 7,
     "Defense" : 5
 }
-global johnny
-johnny = {
-    "Name" : "Johnny",
-    "HP" : 100,
-    "Offense" : 7,
-    "Defense" : 5
-}
+
 global shadow_player
 shadow_player = {
     "Name" : None,
     "HP" : 150,
     "Offense" : 9,
     "Defense" : 3
+}
+
+global johnny
+johnny = {
+    "Name" : "Johnny",
+    "HP" : 100,
+    "Offense" : 7,
+    "Defense" : 5
 }
 
 score = 0
